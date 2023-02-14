@@ -7,7 +7,7 @@ export class BooksController {
     constructor(private BooksService: BooksService) {}
     
     @Post()
-    postLivros(@Body() livroDTO: LivroDTO, @Req() req) {
+    postBooks(@Body() livroDTO: LivroDTO, @Req() req) {
 
         if (req.user.type != "administrador") {
             throw new HttpException("unauthorized", HttpStatus.UNAUTHORIZED)
@@ -26,8 +26,8 @@ export class BooksController {
     }
 
     @Get()
-    getLivros() {
-        return this.BooksService.mostraLivros()
+    getBooks() {
+        return this.BooksService.showBooks()
     }
 
     @Get("/available")
@@ -37,33 +37,53 @@ export class BooksController {
 
     @Get("/:id")
     getBookById(@Param("id") id) {
-        return this.BooksService.mostraLivroDetalhadoPeloId(id)
+        return this.BooksService.showDetailedBooksById(id)
     }
 
     @Put("/:id")
-    putBookById(@Param("id") id, @Body() livroDTO: LivroDTO, @Req() req) {
+    async putBookById(@Param("id") id, @Body() livroDTO: LivroDTO, @Req() req) {
         if (req.user.type != "administrador") {
             throw new HttpException("unauthorized", HttpStatus.UNAUTHORIZED)
         }
 
-        return this.BooksService.alteraUmLivroPeloId(id, livroDTO)
+        const updatedBook = await this.BooksService.changeBookById(id, livroDTO)
+
+        if (updatedBook == false) {
+            throw new HttpException("book do not exists", HttpStatus.BAD_REQUEST)
+        }
+
+        return updatedBook
     }
 
     @Put("/available/:id")
-    reserveBook(@Param("id") id, @Req() req) {
+    async reserveBook(@Param("id") id, @Req() req) {
         if (req.user.type != "cliente") {
             throw new HttpException("unauthorized", HttpStatus.UNAUTHORIZED)
         }
         
-        return this.BooksService.reserverUmLivro(id)
+        const reservedBook = await this.BooksService.reserveBook(id)
+
+        console.log(reservedBook)
+
+        if (reservedBook == false) {
+            throw new HttpException("book unavailable", HttpStatus.BAD_REQUEST)  
+        }
+
+        return reservedBook
     }
 
     @Delete("/:id")
-    deleteBook(@Param("id") id, @Req() req) {
+    async deleteBook(@Param("id") id, @Req() req) {
         if (req.user.type != "administrador") {
             throw new HttpException("unauthorized", HttpStatus.UNAUTHORIZED)
         }
 
-        return this.BooksService.deleteUmLivro(id)
+        const deletedBook = await this.BooksService.deleteBook(id)
+
+        if (deletedBook == false) {
+            throw new HttpException("book do not exists", HttpStatus.BAD_REQUEST)  
+        }
+
+        return deletedBook
     }
 }

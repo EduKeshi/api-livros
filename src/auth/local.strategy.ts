@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new HttpException("invalid type", HttpStatus.BAD_REQUEST)
     }
 
-    const user = await this.authService.validateUser(username, req.body.email, password, req.body.type);
+    const user = await this.authService.validateUser(password);
 
     if (!user) {
       throw new UnauthorizedException();

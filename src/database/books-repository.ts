@@ -1,4 +1,3 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
 import mongoose, { model, Schema } from "mongoose";
 import { Books } from "src/Interfaces/books.Interface";
 import { BooksEntrada } from "src/Interfaces/books.interface.entrada";
@@ -70,6 +69,10 @@ export async function updateById(id: string, newBook: BooksEntrada) {
 
     const book = await bookModel.findOne({ id: id })
 
+    if (book == null) {
+        return false
+    }
+
     book.title = newBook.title
     book.author = newBook.author
     book.available = newBook.available
@@ -84,7 +87,7 @@ export async function reserveBookById(id: string) {
     const book = await bookModel.findOne({ id: id })
 
     if (book.available == false) {
-        throw new HttpException("book unavailable", HttpStatus.BAD_REQUEST)
+        return false
     }
 
     book.available = false
@@ -98,12 +101,16 @@ export async function deleteById(id: string) {
 
     const book = await bookModel.findOne({ id: id })
 
+    if (book == null) {
+        return false
+    }
+
     await bookModel.deleteOne({ id: id })
 
     return book
 }
 
-export async function cadastraUsuario(name: string, email: string, password: string, type: string) {
+export async function registerUser(name: string, email: string, password: string, type: string) {
     mongoose.connect("mongodb://localhost:27017")
 
     const findUser = await userModel.findOne({ email: email })
@@ -144,4 +151,3 @@ export async function findUser(usuario: string, senha: string) {
 
     return user
 }
-
