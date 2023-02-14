@@ -1,4 +1,7 @@
-import { Controller, Post, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from 'src/auth/local-auth.gaurd';
+import { LocalStrategy } from 'src/auth/local.strategy';
 import { Public } from 'src/auth/public-decorator';
 import { UserDTO } from 'src/dto/user.dto';
 import { UsersService } from '../users.service';
@@ -27,6 +30,12 @@ export class UserController {
             throw new HttpException("invalid password", HttpStatus.BAD_REQUEST)
         }
         
-        return this.usersService.create(req)
+        const user = await this.usersService.create(req)
+
+        if (user == false) {
+            throw new HttpException("User already exists", HttpStatus.BAD_REQUEST)
+        }
+
+        return user
     }
 }

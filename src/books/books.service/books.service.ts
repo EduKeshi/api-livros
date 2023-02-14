@@ -21,15 +21,15 @@ export class BooksService {
         return livroDominio
     }
 
-    mostraLivros() {
+    showBooks() {
         return getAllBooks()
     }
 
-    mostraLivroDetalhadoPeloId(id: string) {
+    showDetailedBooksById(id: string) {
         return getBooksById(id)
     }
     
-    alteraUmLivroPeloId(id: string, bookUpdate: BooksEntrada) {
+    changeBookById(id: string, bookUpdate: BooksEntrada) {
         return updateById(id, bookUpdate)
     }
 
@@ -37,11 +37,11 @@ export class BooksService {
         return getAvailableBooks()
     }
 
-    reserverUmLivro(id: string) {
+    reserveBook(id: string) {
         return reserveBookById(id)
     }
 
-    deleteUmLivro(id: string) {
+    deleteBook(id: string) {
         return deleteById(id)
     }
 
